@@ -30,7 +30,7 @@ class PortfolioTest extends TestCase
         $response->assertSee('AbraKeeps');
         $response->assertSee('Kusina ni Mama Reservation System');
         $response->assertSee('Brew &amp; Go', false);
-        $response->assertSee('Vehicle Parking Monitoring System');
+        $response->assertSee('Technical Support Ticketing System');
         $response->assertSee('Online Safety Through Netiquette');
         $response->assertSee('Startup Now Cordillera');
         $response->assertSee('Introduction to Modern AI');
