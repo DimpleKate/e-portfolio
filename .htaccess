@@ -1,0 +1,26 @@
+# InfinityFree serves the hosting account's htdocs folder as the document root.
+# Laravel expects the web root to be its public/ directory, so route every
+# request there. This keeps application code, storage, and .env outside the URL.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Do not rewrite requests that already point at the public directory.
+    RewriteCond %{REQUEST_URI} !/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<IfModule mod_negotiation.c>
+    Options -MultiViews -Indexes
+</IfModule>
+
+# Never serve environment or credential files, even if rewrite rules are off.
+<FilesMatch "^\.env">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

@@ -1,0 +1,131 @@
+@php
+    $meta = $portfolio['meta'];
+    $person = $portfolio['person'];
+    $socials = $portfolio['socials'];
+    $cssVersion = file_exists(public_path('assets/css/style.css')) ? filemtime(public_path('assets/css/style.css')) : time();
+    $jsVersion = file_exists(public_path('assets/js/main.js')) ? filemtime(public_path('assets/js/main.js')) : time();
+@endphp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ $meta['title'] }}</title>
+    <meta name="description" content="{{ $meta['description'] }}">
+    <meta name="keywords" content="{{ implode(', ', $meta['keywords']) }}">
+    <meta name="author" content="{{ $person['name'] }}">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="{{ $meta['theme_color'] }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ $person['name'] }}">
+    <meta property="og:title" content="{{ $meta['title'] }}">
+    <meta property="og:description" content="{{ $meta['description'] }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ $meta['og_image_url'] }}">
+    <meta property="og:image:alt" content="{{ $person['photo_alt'] }}">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $meta['title'] }}">
+    <meta name="twitter:description" content="{{ $meta['description'] }}">
+    <meta name="twitter:image" content="{{ $meta['og_image_url'] }}">
+
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+
+    <link rel="preload" href="{{ asset('assets/manrope-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}?v={{ $cssVersion }}">
+
+    <script>
+        document.documentElement.classList.add('js');
+    </script>
+
+    <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => $person['name'],
+            'jobTitle' => $person['title'],
+            'description' => $meta['description'],
+            'email' => 'mailto:'.$person['email'],
+            'telephone' => $person['phone'],
+            'url' => url('/'),
+            'image' => $meta['og_image_url'],
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Bangued',
+                'addressRegion' => 'Abra',
+                'addressCountry' => 'PH',
+            ],
+            'alumniOf' => [
+                '@type' => 'CollegeOrUniversity',
+                'name' => 'Data Center College of the Philippines',
+            ],
+            'sameAs' => collect($socials)
+                ->pluck('url')
+                ->filter(fn (string $url): bool => str_starts_with($url, 'http'))
+                ->values()
+                ->all(),
+            'knowsAbout' => [
+                'Web development',
+                'Laravel',
+                'PHP',
+                'JavaScript',
+                'UI design',
+                'MySQL',
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+    </script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="site-background" aria-hidden="true">
+        <div class="site-background__grid"></div>
+        <div class="site-background__glow site-background__glow--one"></div>
+        <div class="site-background__glow site-background__glow--two"></div>
+        <div class="site-background__noise"></div>
+    </div>
+
+    <div class="scroll-progress" aria-hidden="true">
+        <span class="scroll-progress__bar" id="scrollProgress"></span>
+    </div>
+
+    @include('partials.navbar')
+
+    <main id="main-content">
+        @yield('content')
+    </main>
+
+    @include('partials.footer')
+
+    <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">
+        <x-icon name="arrow-up" :size="18" />
+    </button>
+
+    <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Certificate preview">
+        <div class="lightbox__backdrop" data-lightbox-close></div>
+        <div class="lightbox__dialog">
+            <button class="lightbox__close" type="button" data-lightbox-close aria-label="Close preview">
+                <x-icon name="close" :size="20" />
+            </button>
+            <div class="lightbox__media">
+                <img id="lightboxImage" src="" alt="">
+            </div>
+            <div class="lightbox__footer">
+                <p id="lightboxCaption"></p>
+                <a id="lightboxLink" class="text-link" href="" target="_blank" rel="noopener noreferrer" hidden>
+                    Open original <x-icon name="arrow-up-right" :size="14" />
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ asset('assets/js/main.js') }}?v={{ $jsVersion }}" defer></script>
+</body>
+</html>
