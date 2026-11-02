@@ -38,7 +38,6 @@
                             height="760"
                             loading="lazy"
                         >
-                        <span class="project-card__category">{{ $project['category'] }}</span>
                         <button
                             class="project-card__preview"
                             type="button"
@@ -52,7 +51,6 @@
 
                     <div class="project-card__body">
                         <div class="project-card__meta">
-                            <span>{{ $project['category'] }}</span>
                             <span>{{ $project['year'] }}</span>
                         </div>
                         <h3>{{ $project['title'] }}</h3>

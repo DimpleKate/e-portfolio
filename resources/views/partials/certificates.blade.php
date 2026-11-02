@@ -50,7 +50,6 @@
                             <time class="certificate-card__date" datetime="{{ $certificate['date_iso'] }}">{{ $certificate['date'] }}</time>
                         </div>
                         <h3>{{ $certificate['title'] }}</h3>
-                        <p>{{ $certificate['description'] }}</p>
                     </div>
                 </article>
             @endforeach

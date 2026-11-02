@@ -4,7 +4,6 @@
  * Generate a clean, one-page PDF CV from the portfolio content.
  * Run: php tools/generate-cv.php
  */
-
 $output = __DIR__.'/../public/assets/files/Dimple-Kate-Bodonia-CV.pdf';
 
 if (! is_dir(dirname($output))) {
@@ -34,7 +33,7 @@ $add = static function (string $command) use (&$commands): void {
 
 $text = static function (float $x, float $y, float $size, string $font, string $value, string $color = '0.08 0.12 0.18') use ($add, $escape): void {
     $add(sprintf(
-        "BT %s rg /%s %.2f Tf %.2f %.2f Td (%s) Tj ET",
+        'BT %s rg /%s %.2f Tf %.2f %.2f Td (%s) Tj ET',
         $color,
         $font,
         $size,
@@ -79,7 +78,7 @@ $rect(0, 686, 595, 4, '0.18 0.48 1');
 $text(48, 794, 25, 'F2', 'DIMPLE KATE B. BODONIA', '1 1 1');
 $text(48, 771, 10.5, 'F1', 'BS Information Technology Student · Web Developer', '0.70 0.84 1');
 $text(48, 744, 8.8, 'F1', 'kbbersalona@gmail.com  ·  +63 995 524 3015  ·  Bangued, Abra, Philippines', '0.78 0.86 0.96');
-$text(48, 728, 8.8, 'F1', 'github.com/DimpleBodonia  ·  facebook.com/dimvsx', '0.78 0.86 0.96');
+$text(48, 728, 8.8, 'F1', 'github.com/DimpleKate  ·  facebook.com/dimvsx', '0.78 0.86 0.96');
 
 // Profile
 $y = 656;
@@ -125,9 +124,9 @@ $y -= 23;
 
 $projects = [
     ['AbraKeeps', 'Online marketplace for Abra’s local delicacies and handicrafts; supports MSMEs and cultural heritage.', 'PHP, Laravel, MySQL, JavaScript'],
-    ['Kusina ni Mama Reservation System', 'Web-based table reservation and booking management system for a restaurant.', 'PHP, MySQL, JavaScript'],
-    ['Brew & Go', 'Coffee shop ordering and management system with customer ordering and an admin dashboard.', 'PHP, MySQL, JavaScript'],
-    ['Vehicle Parking Monitoring System', 'Desktop application for vehicle entries, parking slots, records, and transactions.', 'Visual Studio, MySQL'],
+    ['Technical Support Ticketing System', 'Web-based helpdesk for faculty and staff to report, track, and resolve IT issues at DCCP – Bangued Campus.', 'PHP, Laravel, MySQL, Tailwind CSS, Alpine.js'],
+    ['Kusina ni Mama Reservation & Ordering System', 'Restaurant system for table reservations, advance orders, kitchen preparation, and POS transactions.', 'PHP, Laravel, MySQL, JavaScript'],
+    ['Brew & Go', 'Coffee shop ordering and management system with customer ordering and an admin dashboard.', 'PHP, Laravel, MySQL, Bootstrap, JavaScript'],
 ];
 
 foreach ($projects as $project) {

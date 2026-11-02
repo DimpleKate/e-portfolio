@@ -30,7 +30,6 @@
                             </div>
                             <h3>{{ $item['degree'] }}</h3>
                             <p class="timeline__institution">{{ $item['institution'] }} <span aria-hidden="true">·</span> {{ $item['location'] }}</p>
-                            <p class="timeline__description">{{ $item['description'] }}</p>
                         </div>
                     </article>
                 @endforeach

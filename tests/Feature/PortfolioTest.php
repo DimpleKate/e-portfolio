@@ -28,7 +28,7 @@ class PortfolioTest extends TestCase
         $response->assertOk();
         $response->assertSee('Dimple-Kate-Bodonia-CV.pdf');
         $response->assertSee('AbraKeeps');
-        $response->assertSee('Kusina ni Mama Reservation System');
+        $response->assertSee('Kusina ni Mama Reservation &amp; Ordering System', false);
         $response->assertSee('Brew &amp; Go', false);
         $response->assertSee('Technical Support Ticketing System');
         $response->assertSee('Online Safety Through Netiquette');
@@ -43,26 +43,36 @@ class PortfolioTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeInOrder([
+            'Data Analytics Essentials',
+            'Data Science Essentials with Python',
+            'Ethical Hacker',
+            'Introduction to Cybersecurity',
+            'Introduction to Greenhouse Gas Accounting for IT',
+            'Networking Basics',
+            'Operating Systems Basics',
+            'Python Essentials 1',
             'Introduction to Modern AI',
             'Startup Now Cordillera',
             'Startup Fundamentals',
             'Online Safety Through Netiquette',
         ]);
+        $response->assertSee('datetime="2026-11"', false);
         $response->assertSee('datetime="2026-10"', false);
         $response->assertSee('datetime="2026-09"', false);
         $response->assertSee('datetime="2026-07"', false);
+        $response->assertSee('November 2026');
         $response->assertSee('October 2026');
         $response->assertSee('September 2026');
         $response->assertSee('July 2026');
     }
 
-    public function test_portfolio_exposes_speed_monitor_without_stale_monitors(): void
+    public function test_portfolio_excludes_footer_speed_monitor_and_stale_monitors(): void
     {
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('id="speedMonitor"', false);
-        $response->assertSee('Testing…');
+        $response->assertDontSee('id="speedMonitor"', false);
+        $response->assertDontSee('Testing…');
         $response->assertDontSee('id="pingMonitor"', false);
         $response->assertDontSee('Real-time ping');
         $response->assertDontSee('Designed and built with care.');

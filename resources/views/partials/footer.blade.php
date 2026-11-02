@@ -63,17 +63,6 @@
 
         <div class="footer__bottom">
             <p class="footer__copyright">&copy; {{ date('Y') }} {{ $person['name'] }}. All rights reserved.</p>
-            <div class="footer__status">
-                <a class="footer__back" href="#home">
-                    Back to top
-                    <x-icon name="arrow-up" :size="14" />
-                </a>
-                <div class="speed-monitor" id="speedMonitor" data-endpoint="{{ route('speedtest.payload') }}" title="Download speed measured live in your browser">
-                    <x-icon name="wifi" :size="15" />
-                    <span class="speed-monitor__label">Speed</span>
-                    <span class="speed-monitor__value" id="speedValue" role="status" aria-live="polite">Testing…</span>
-                </div>
-            </div>
         </div>
     </div>
 </footer>

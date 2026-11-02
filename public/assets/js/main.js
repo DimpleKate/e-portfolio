@@ -164,6 +164,270 @@
     }
 
     /* ---------------------------------------------------------------------
+       Parallax
+    --------------------------------------------------------------------- */
+    const parallaxRoot = document.documentElement;
+    const aboutImageCard = document.querySelector('.about__image-card');
+    const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mobileParallaxQuery = window.matchMedia('(max-width: 760px)');
+    const parallaxValues = new Map();
+    let parallaxFrame = null;
+    let parallaxActive = false;
+
+    const clampParallax = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    const setParallaxValue = (name, value) => {
+        const rounded = Math.round(value * 100) / 100;
+
+        if (parallaxValues.get(name) === rounded) {
+            return;
+        }
+
+        parallaxValues.set(name, rounded);
+        parallaxRoot.style.setProperty(`--parallax-${name}`, String(rounded));
+    };
+
+    const clearParallaxValues = () => {
+        parallaxValues.forEach((value, name) => {
+            parallaxRoot.style.removeProperty(`--parallax-${name}`);
+        });
+        parallaxValues.clear();
+    };
+
+    const renderParallax = () => {
+        const scrollTop = window.scrollY;
+        const viewportHeight = window.innerHeight || 1;
+        const mobileFactor = mobileParallaxQuery.matches ? 0.45 : 1;
+        const heroTravel = Math.min(scrollTop, viewportHeight * 1.2) * mobileFactor;
+
+        setParallaxValue('bg-grid', clampParallax(scrollTop * 0.035, -50, 50));
+        setParallaxValue('glow-one-x', clampParallax(scrollTop * 0.03, -60, 60));
+        setParallaxValue('glow-one-y', clampParallax(scrollTop * 0.06, -70, 70));
+        setParallaxValue('glow-two-x', clampParallax(scrollTop * -0.025, -50, 50));
+        setParallaxValue('glow-two-y', clampParallax(scrollTop * -0.045, -60, 60));
+        setParallaxValue('hero', clampParallax(heroTravel * -0.08, -30, 30));
+        setParallaxValue('orbit-one-x', clampParallax(heroTravel * 0.02, -18, 18));
+        setParallaxValue('orbit-one-y', clampParallax(heroTravel * -0.03, -20, 20));
+        setParallaxValue('orbit-two-x', clampParallax(heroTravel * -0.025, -20, 20));
+        setParallaxValue('orbit-two-y', clampParallax(heroTravel * 0.02, -16, 16));
+        setParallaxValue('float-top-x', clampParallax(heroTravel * -0.035, -20, 20));
+        setParallaxValue('float-top-y', clampParallax(heroTravel * -0.055, -26, 26));
+        setParallaxValue('float-bottom-x', clampParallax(heroTravel * 0.03, -18, 18));
+        setParallaxValue('float-bottom-y', clampParallax(heroTravel * 0.045, -24, 24));
+        setParallaxValue('float-side-x', clampParallax(heroTravel * -0.022, -16, 16));
+        setParallaxValue('float-side-y', clampParallax(heroTravel * 0.035, -20, 20));
+
+        if (aboutImageCard) {
+            const rect = aboutImageCard.getBoundingClientRect();
+            const relativePosition = (rect.top + rect.height / 2 - viewportHeight / 2) / viewportHeight;
+            const imageShift = clampParallax(relativePosition * -18, -14, 14) * mobileFactor;
+
+            setParallaxValue('about-y', imageShift);
+        }
+    };
+
+    const requestParallax = () => {
+        if (!parallaxActive || parallaxFrame !== null) {
+            return;
+        }
+
+        parallaxFrame = window.requestAnimationFrame(() => {
+            parallaxFrame = null;
+
+            if (parallaxActive) {
+                renderParallax();
+            }
+        });
+    };
+
+    const updateParallaxPreference = () => {
+        const shouldRun = !reduceMotionQuery.matches;
+
+        if (shouldRun === parallaxActive) {
+            return;
+        }
+
+        parallaxActive = shouldRun;
+
+        if (parallaxActive) {
+            requestParallax();
+        } else {
+            clearParallaxValues();
+        }
+    };
+
+    parallaxActive = !reduceMotionQuery.matches;
+
+    if (parallaxActive) {
+        requestParallax();
+    }
+
+    window.addEventListener('scroll', requestParallax, { passive: true });
+    window.addEventListener('resize', () => {
+        updateParallaxPreference();
+        requestParallax();
+    }, { passive: true });
+
+    reduceMotionQuery.addEventListener?.('change', updateParallaxPreference);
+    mobileParallaxQuery.addEventListener?.('change', requestParallax);
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            requestParallax();
+        }
+    });
+
+    /* ---------------------------------------------------------------------
+       Hero 3D tilt and cursor glow
+    --------------------------------------------------------------------- */
+    const heroSection = document.getElementById('home');
+    const heroVisual = document.querySelector('.hero__visual');
+    const heroTiltQuery = window.matchMedia('(any-hover: hover) and (any-pointer: fine) and (min-width: 761px)');
+    const heroTiltState = {
+        x: 0,
+        y: 0,
+        targetX: 0,
+        targetY: 0,
+        glowX: 50,
+        glowY: 50,
+        targetGlowX: 50,
+        targetGlowY: 50,
+        bgX: 0,
+        bgY: 0,
+        targetBgX: 0,
+        targetBgY: 0,
+        frame: null,
+    };
+    let heroTiltActive = false;
+
+    const applyHeroTilt = () => {
+        parallaxRoot.style.setProperty('--hero-tilt-x', heroTiltState.x.toFixed(2));
+        parallaxRoot.style.setProperty('--hero-tilt-y', heroTiltState.y.toFixed(2));
+        parallaxRoot.style.setProperty('--hero-glow-x', `${heroTiltState.glowX.toFixed(2)}%`);
+        parallaxRoot.style.setProperty('--hero-glow-y', `${heroTiltState.glowY.toFixed(2)}%`);
+        parallaxRoot.style.setProperty('--bg-pointer-x', heroTiltState.bgX.toFixed(3));
+        parallaxRoot.style.setProperty('--bg-pointer-y', heroTiltState.bgY.toFixed(3));
+    };
+
+    const animateHeroTilt = () => {
+        const easing = 0.14;
+
+        heroTiltState.x += (heroTiltState.targetX - heroTiltState.x) * easing;
+        heroTiltState.y += (heroTiltState.targetY - heroTiltState.y) * easing;
+        heroTiltState.glowX += (heroTiltState.targetGlowX - heroTiltState.glowX) * easing;
+        heroTiltState.glowY += (heroTiltState.targetGlowY - heroTiltState.glowY) * easing;
+        heroTiltState.bgX += (heroTiltState.targetBgX - heroTiltState.bgX) * easing;
+        heroTiltState.bgY += (heroTiltState.targetBgY - heroTiltState.bgY) * easing;
+
+        const isMoving =
+            Math.abs(heroTiltState.targetX - heroTiltState.x) > 0.01 ||
+            Math.abs(heroTiltState.targetY - heroTiltState.y) > 0.01 ||
+            Math.abs(heroTiltState.targetGlowX - heroTiltState.glowX) > 0.05 ||
+            Math.abs(heroTiltState.targetGlowY - heroTiltState.glowY) > 0.05 ||
+            Math.abs(heroTiltState.targetBgX - heroTiltState.bgX) > 0.005 ||
+            Math.abs(heroTiltState.targetBgY - heroTiltState.bgY) > 0.005;
+
+        applyHeroTilt();
+
+        if (isMoving) {
+            heroTiltState.frame = window.requestAnimationFrame(animateHeroTilt);
+        } else {
+            heroTiltState.x = heroTiltState.targetX;
+            heroTiltState.y = heroTiltState.targetY;
+            heroTiltState.glowX = heroTiltState.targetGlowX;
+            heroTiltState.glowY = heroTiltState.targetGlowY;
+            heroTiltState.bgX = heroTiltState.targetBgX;
+            heroTiltState.bgY = heroTiltState.targetBgY;
+            heroTiltState.frame = null;
+            applyHeroTilt();
+        }
+    };
+
+    const startHeroTilt = () => {
+        if (!heroTiltActive || heroTiltState.frame !== null) {
+            return;
+        }
+
+        heroTiltState.frame = window.requestAnimationFrame(animateHeroTilt);
+    };
+
+    const resetHeroTilt = () => {
+        heroTiltState.targetX = 0;
+        heroTiltState.targetY = 0;
+        heroTiltState.targetGlowX = 50;
+        heroTiltState.targetGlowY = 50;
+        heroTiltState.targetBgX = 0;
+        heroTiltState.targetBgY = 0;
+        startHeroTilt();
+    };
+
+    const handleHeroPointerMove = (event) => {
+        if (!heroTiltActive || !heroVisual) {
+            return;
+        }
+
+        const rect = heroVisual.getBoundingClientRect();
+
+        if (rect.width === 0 || rect.height === 0) {
+            return;
+        }
+
+        const pointerX = clampParallax((event.clientX - rect.left) / rect.width, 0, 1);
+        const pointerY = clampParallax((event.clientY - rect.top) / rect.height, 0, 1);
+        const maxTilt = 8.5;
+
+        heroTiltState.targetX = (0.5 - pointerY) * 2 * maxTilt;
+        heroTiltState.targetY = (pointerX - 0.5) * 2 * maxTilt;
+        heroTiltState.targetGlowX = pointerX * 100;
+        heroTiltState.targetGlowY = pointerY * 100;
+        heroTiltState.targetBgX = (pointerX - 0.5) * 2;
+        heroTiltState.targetBgY = (pointerY - 0.5) * 2;
+
+        startHeroTilt();
+    };
+
+    const updateHeroTiltPreference = () => {
+        const shouldRun = !reduceMotionQuery.matches && heroTiltQuery.matches;
+
+        if (shouldRun === heroTiltActive) {
+            return;
+        }
+
+        heroTiltActive = shouldRun;
+
+        if (!heroTiltActive) {
+            if (heroTiltState.frame !== null) {
+                window.cancelAnimationFrame(heroTiltState.frame);
+                heroTiltState.frame = null;
+            }
+
+            heroTiltState.x = 0;
+            heroTiltState.y = 0;
+            heroTiltState.targetX = 0;
+            heroTiltState.targetY = 0;
+            heroTiltState.glowX = 50;
+            heroTiltState.glowY = 50;
+            heroTiltState.targetGlowX = 50;
+            heroTiltState.targetGlowY = 50;
+            heroTiltState.bgX = 0;
+            heroTiltState.bgY = 0;
+            heroTiltState.targetBgX = 0;
+            heroTiltState.targetBgY = 0;
+            applyHeroTilt();
+        }
+    };
+
+    updateHeroTiltPreference();
+
+    heroSection?.addEventListener('pointermove', handleHeroPointerMove, { passive: true });
+    heroSection?.addEventListener('pointerleave', resetHeroTilt);
+    heroSection?.addEventListener('pointercancel', resetHeroTilt);
+    window.addEventListener('blur', resetHeroTilt);
+
+    heroTiltQuery.addEventListener?.('change', updateHeroTiltPreference);
+    reduceMotionQuery.addEventListener?.('change', updateHeroTiltPreference);
+
+    /* ---------------------------------------------------------------------
        Certificate lightbox
     --------------------------------------------------------------------- */
     const lightbox = document.getElementById('lightbox');
