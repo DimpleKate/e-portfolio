@@ -119,9 +119,6 @@
             </div>
             <div class="lightbox__footer">
                 <p id="lightboxCaption"></p>
-                <a id="lightboxLink" class="text-link" href="" target="_blank" rel="noopener noreferrer" hidden>
-                    Open original <x-icon name="arrow-up-right" :size="14" />
-                </a>
             </div>
         </div>
     </div>

@@ -2335,10 +2335,6 @@ ul {
     font-weight: 600;
 }
 
-.lightbox__footer .text-link {
-    flex: 0 0 auto;
-}
-
 /* Gallery modal */
 .gallery-modal__dialog {
     position: relative;

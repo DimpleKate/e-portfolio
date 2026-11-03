@@ -23,7 +23,6 @@
                         data-lightbox-trigger
                         data-full="{{ $certificate['image_url'] }}"
                         data-caption="{{ $certificate['title'] }} — {{ $certificate['issuer'] }} ({{ $certificate['date'] }})"
-                        data-link="{{ $certificate['url'] }}"
                         aria-label="Preview {{ $certificate['title'] }} certificate"
                     >
                         <img

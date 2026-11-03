@@ -433,7 +433,6 @@
     const lightbox = document.getElementById('lightbox');
     const lightboxImage = document.getElementById('lightboxImage');
     const lightboxCaption = document.getElementById('lightboxCaption');
-    const lightboxLink = document.getElementById('lightboxLink');
     let lightboxTrigger = null;
 
     const closeLightbox = () => {
@@ -456,12 +455,6 @@
         lightboxImage.src = trigger.dataset.full || '';
         lightboxImage.alt = trigger.dataset.caption || 'Certificate preview';
         lightboxCaption.textContent = trigger.dataset.caption || '';
-
-        if (lightboxLink) {
-            const link = trigger.dataset.link || '';
-            lightboxLink.hidden = link === '';
-            lightboxLink.href = link;
-        }
 
         lightbox.classList.add('is-open');
         lightbox.setAttribute('aria-hidden', 'false');
