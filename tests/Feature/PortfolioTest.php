@@ -15,7 +15,8 @@ class PortfolioTest extends TestCase
         $response->assertSee('id="home"', false);
         $response->assertSee('id="about"', false);
         $response->assertSee('id="education"', false);
-        $response->assertSee('id="skills"', false);
+        $response->assertSee('id="portfolio"', false);
+        $response->assertSee('id="tech-stack"', false);
         $response->assertSee('id="certificates"', false);
         $response->assertSee('id="projects"', false);
         $response->assertSee('id="contact"', false);
@@ -105,5 +106,17 @@ class PortfolioTest extends TestCase
             ->assertOk()
             ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
             ->assertSee('Sitemap:');
+    }
+
+    public function test_portfolio_section_renders_tabs_for_projects_certificates_and_tech_stack(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('href="#portfolio"', false);
+        $response->assertSee('data-section="portfolio"', false);
+        $response->assertSee('data-portfolio-tab="projects"', false);
+        $response->assertSee('data-portfolio-tab="certificates"', false);
+        $response->assertSee('data-portfolio-tab="tech-stack"', false);
     }
 }

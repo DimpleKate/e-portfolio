@@ -8,7 +8,7 @@
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
     const navLinkItems = Array.from(document.querySelectorAll('.nav-link'));
-    const sections = Array.from(document.querySelectorAll('main section[id]'));
+    const sections = Array.from(document.querySelectorAll('main > section[id]'));
     const revealItems = Array.from(document.querySelectorAll('.reveal'));
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -103,6 +103,100 @@
             closeMenu();
         }
     });
+
+    /* ---------------------------------------------------------------------
+       Portfolio tabs
+    --------------------------------------------------------------------- */
+    const portfolioTabs = Array.from(document.querySelectorAll('[data-portfolio-tab]'));
+    const portfolioPanels = Array.from(document.querySelectorAll('[data-portfolio-panel]'));
+
+    if (portfolioTabs.length && portfolioPanels.length) {
+        const revealPanelItems = (panel) => {
+            panel.querySelectorAll('.reveal').forEach((item) => item.classList.add('is-visible'));
+        };
+
+        const activatePortfolioTab = (target, options = {}) => {
+            const activeTab = portfolioTabs.find((tab) => tab.dataset.portfolioTab === target);
+
+            if (!activeTab) {
+                return;
+            }
+
+            portfolioTabs.forEach((tab) => {
+                const isActive = tab === activeTab;
+                tab.classList.toggle('is-active', isActive);
+                tab.setAttribute('aria-selected', String(isActive));
+                tab.tabIndex = isActive ? 0 : -1;
+            });
+
+            portfolioPanels.forEach((panel) => {
+                const isActive = panel.dataset.portfolioPanel === target;
+                panel.classList.toggle('is-active', isActive);
+                panel.hidden = !isActive;
+
+                if (isActive) {
+                    revealPanelItems(panel);
+                }
+            });
+
+            if (options.focus) {
+                activeTab.focus();
+            }
+
+            if (options.scroll) {
+                window.requestAnimationFrame(() => {
+                    document.getElementById(target)?.scrollIntoView({
+                        behavior: reduceMotion ? 'auto' : 'smooth',
+                        block: 'start',
+                    });
+                });
+            }
+        };
+
+        const syncPortfolioTabFromHash = () => {
+            const target = window.location.hash.replace('#', '');
+
+            if (!portfolioPanels.some((panel) => panel.dataset.portfolioPanel === target)) {
+                return;
+            }
+
+            const activePanel = portfolioPanels.find(
+                (panel) => panel.dataset.portfolioPanel === target && !panel.hidden
+            );
+
+            activatePortfolioTab(target, { scroll: !activePanel });
+        };
+
+        portfolioTabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                activatePortfolioTab(tab.dataset.portfolioTab);
+            });
+
+            tab.addEventListener('keydown', (event) => {
+                let nextIndex = null;
+
+                if (event.key === 'ArrowRight') {
+                    nextIndex = (index + 1) % portfolioTabs.length;
+                } else if (event.key === 'ArrowLeft') {
+                    nextIndex = (index - 1 + portfolioTabs.length) % portfolioTabs.length;
+                } else if (event.key === 'Home') {
+                    nextIndex = 0;
+                } else if (event.key === 'End') {
+                    nextIndex = portfolioTabs.length - 1;
+                }
+
+                if (nextIndex === null) {
+                    return;
+                }
+
+                event.preventDefault();
+                activatePortfolioTab(portfolioTabs[nextIndex].dataset.portfolioTab, { focus: true });
+            });
+        });
+
+        window.addEventListener('hashchange', syncPortfolioTabFromHash);
+        syncPortfolioTabFromHash();
+    }
 
     /* ---------------------------------------------------------------------
        Active navigation link
@@ -426,6 +520,141 @@
 
     heroTiltQuery.addEventListener?.('change', updateHeroTiltPreference);
     reduceMotionQuery.addEventListener?.('change', updateHeroTiltPreference);
+
+    /* ---------------------------------------------------------------------
+       Draggable hero portrait (movable ID card)
+    --------------------------------------------------------------------- */
+    const heroPortrait = document.querySelector('.hero__portrait');
+
+    if (heroPortrait) {
+        let isDragging = false;
+        let pointerId = null;
+        let startX = 0;
+        let startY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        const maxDrag = 140;
+
+        const applyDrag = (x, y) => {
+            heroPortrait.style.setProperty('--hero-drag-x', `${x}px`);
+            heroPortrait.style.setProperty('--hero-drag-y', `${y}px`);
+        };
+
+        heroPortrait.addEventListener('pointerdown', (event) => {
+            isDragging = true;
+            pointerId = event.pointerId;
+            heroPortrait.setPointerCapture(pointerId);
+            heroPortrait.classList.add('is-dragging');
+            startX = event.clientX - currentX;
+            startY = event.clientY - currentY;
+        });
+
+        heroPortrait.addEventListener('pointermove', (event) => {
+            if (!isDragging || event.pointerId !== pointerId) {
+                return;
+            }
+
+            currentX = Math.max(-maxDrag, Math.min(maxDrag, event.clientX - startX));
+            currentY = Math.max(-maxDrag, Math.min(maxDrag, event.clientY - startY));
+            applyDrag(currentX, currentY);
+        });
+
+        const endDrag = (event) => {
+            if (!isDragging || event.pointerId !== pointerId) {
+                return;
+            }
+
+            isDragging = false;
+            heroPortrait.releasePointerCapture(pointerId);
+            pointerId = null;
+            heroPortrait.classList.remove('is-dragging');
+
+            currentX = 0;
+            currentY = 0;
+
+            heroPortrait.style.transition = '';
+            applyDrag(0, 0);
+        };
+
+        heroPortrait.addEventListener('pointerup', endDrag);
+        heroPortrait.addEventListener('pointercancel', endDrag);
+        heroPortrait.addEventListener('lostpointercapture', () => {
+            if (isDragging) {
+                isDragging = false;
+                heroPortrait.classList.remove('is-dragging');
+                currentX = 0;
+                currentY = 0;
+                applyDrag(0, 0);
+            }
+        });
+
+        heroPortrait.addEventListener('mouseenter', () => {
+            if (heroPortrait.classList.contains('is-rotating') || heroPortrait.classList.contains('is-dragging')) {
+                return;
+            }
+
+            heroPortrait.classList.add('is-rotating');
+            window.setTimeout(() => {
+                // Disable the transform transition so the portrait snaps back to
+                // its original angle instantly instead of animating a -360deg spin.
+                heroPortrait.style.transition = 'none';
+                heroPortrait.classList.remove('is-rotating');
+                // Force a reflow so the transition override takes effect before
+                // restoring the default transition for drag interactions.
+                void heroPortrait.offsetWidth;
+                heroPortrait.style.transition = '';
+            }, 3000);
+        });
+    }
+
+    /* ---------------------------------------------------------------------
+       Cursor spotlight and subtle card tilt
+    --------------------------------------------------------------------- */
+    const cursorGlow = document.createElement('div');
+    cursorGlow.className = 'cursor-glow';
+    document.body.appendChild(cursorGlow);
+
+    let glowX = -1000;
+    let glowY = -1000;
+    let targetGlowX = -1000;
+    let targetGlowY = -1000;
+
+    window.addEventListener('mousemove', (event) => {
+        targetGlowX = event.clientX;
+        targetGlowY = event.clientY;
+    }, { passive: true });
+
+    const animateCursorGlow = () => {
+        glowX += (targetGlowX - glowX) * 0.12;
+        glowY += (targetGlowY - glowY) * 0.12;
+        cursorGlow.style.transform = `translate3d(${glowX}px, ${glowY}px, 0) translate(-50%, -50%)`;
+        window.requestAnimationFrame(animateCursorGlow);
+    };
+
+    animateCursorGlow();
+
+    const tiltTargets = document.querySelectorAll('.skill-card, .project-card, .certificate-card, .floating-card');
+
+    tiltTargets.forEach((element) => {
+        element.addEventListener('pointermove', (event) => {
+            const rect = element.getBoundingClientRect();
+
+            if (!rect.width || !rect.height) {
+                return;
+            }
+
+            const x = (event.clientX - rect.left) / rect.width - 0.5;
+            const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+            element.style.setProperty('--tilt-x', `${(x * 8).toFixed(2)}deg`);
+            element.style.setProperty('--tilt-y', `${(-y * 8).toFixed(2)}deg`);
+        }, { passive: true });
+
+        element.addEventListener('pointerleave', () => {
+            element.style.setProperty('--tilt-x', '0deg');
+            element.style.setProperty('--tilt-y', '0deg');
+        });
+    });
 
     /* ---------------------------------------------------------------------
        Certificate lightbox
@@ -789,6 +1018,324 @@
         } else {
             window.setTimeout(startSpeedMonitor, 2000);
         }
+    }
+
+    /* ---------------------------------------------------------------------
+       Ambient starfield background
+    --------------------------------------------------------------------- */
+    const starCanvas = document.getElementById('starfield');
+
+    if (starCanvas) {
+        const starContext = starCanvas.getContext('2d');
+        const starPalette = [
+            [231, 211, 220],
+            [201, 163, 182],
+            [150, 170, 235],
+            [190, 176, 230],
+        ];
+        const starColors = starPalette.map(([red, green, blue]) => `${red}, ${green}, ${blue}`);
+        const starSprites = starPalette.map(([red, green, blue]) => {
+            const sprite = document.createElement('canvas');
+            const size = 32;
+            sprite.width = size;
+            sprite.height = size;
+
+            const spriteContext = sprite.getContext('2d');
+            const gradient = spriteContext.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+            gradient.addColorStop(0, `rgba(${red}, ${green}, ${blue}, 1)`);
+            gradient.addColorStop(0.22, `rgba(${red}, ${green}, ${blue}, 0.55)`);
+            gradient.addColorStop(1, `rgba(${red}, ${green}, ${blue}, 0)`);
+
+            spriteContext.fillStyle = gradient;
+            spriteContext.fillRect(0, 0, size, size);
+
+            return sprite;
+        });
+
+        const stars = [];
+        const shootingStars = [];
+        const flowParticles = [];
+        let starfieldWidth = 0;
+        let starfieldHeight = 0;
+        let starfieldFrame = null;
+        let starfieldResizeTimer = null;
+        let starfieldLastTime = 0;
+        let nextShootingStarAt = 0;
+
+        const randomBetween = (min, max) => min + Math.random() * (max - min);
+
+        const seedStarfield = () => {
+            stars.length = 0;
+            shootingStars.length = 0;
+            flowParticles.length = 0;
+
+            const density = starfieldWidth < 760 ? 10500 : 13500;
+            const starCount = Math.min(120, Math.max(26, Math.round((starfieldWidth * starfieldHeight) / density)));
+
+            for (let index = 0; index < starCount; index += 1) {
+                stars.push({
+                    x: Math.random() * starfieldWidth,
+                    y: Math.random() * starfieldHeight,
+                    radius: randomBetween(0.45, 1.5),
+                    alpha: randomBetween(0.16, 0.62),
+                    speed: randomBetween(0.18, 0.5),
+                    drift: randomBetween(-0.08, 0.08),
+                    twinkle: randomBetween(0.0004, 0.0013),
+                    phase: Math.random() * Math.PI * 2,
+                    sprite: starSprites[Math.floor(Math.random() * starSprites.length)],
+                });
+            }
+
+            const flowCount = starfieldWidth < 760 ? 30 : 58;
+
+            for (let index = 0; index < flowCount; index += 1) {
+                const paletteIndex = Math.floor(Math.random() * starSprites.length);
+                const vx = randomBetween(0.07, 0.26);
+                const vy = randomBetween(-0.26, -0.07);
+
+                flowParticles.push({
+                    x: Math.random() * starfieldWidth,
+                    y: Math.random() * starfieldHeight,
+                    radius: randomBetween(1.2, 3.6),
+                    alpha: randomBetween(0.05, 0.17),
+                    vx,
+                    vy,
+                    speed: Math.max(Math.hypot(vx, vy), 0.001),
+                    sway: randomBetween(0.00025, 0.0007),
+                    phase: Math.random() * Math.PI * 2,
+                    sprite: starSprites[paletteIndex],
+                    color: starColors[paletteIndex],
+                });
+            }
+        };
+
+        const spawnShootingStar = () => {
+            const isLeftward = Math.random() < 0.5;
+            const angle = isLeftward
+                ? Math.PI - randomBetween(0.55, 0.95)
+                : randomBetween(0.55, 0.95);
+            const speed = randomBetween(6, 10);
+            const paletteIndex = Math.floor(Math.random() * starSprites.length);
+
+            shootingStars.push({
+                x: isLeftward
+                    ? randomBetween(starfieldWidth * 0.55, starfieldWidth * 1.05)
+                    : randomBetween(-starfieldWidth * 0.05, starfieldWidth * 0.45),
+                y: randomBetween(-starfieldHeight * 0.15, starfieldHeight * 0.22),
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                angle,
+                length: randomBetween(120, 230),
+                width: randomBetween(1.2, 2),
+                color: starColors[paletteIndex],
+                sprite: starSprites[paletteIndex],
+                age: 0,
+                maxLife: randomBetween(1400, 2200),
+            });
+        };
+
+        const drawFlowParticles = (time, animate, frameScale) => {
+            flowParticles.forEach((particle) => {
+                if (animate) {
+                    particle.x += (particle.vx + Math.sin(time * particle.sway + particle.phase) * 0.08) * frameScale;
+                    particle.y += (particle.vy + Math.cos(time * particle.sway * 0.8 + particle.phase) * 0.04) * frameScale;
+
+                    if (particle.y < -40) {
+                        particle.y = starfieldHeight + 40;
+                        particle.x = Math.random() * starfieldWidth;
+                    }
+
+                    if (particle.x > starfieldWidth + 40) {
+                        particle.x = -40;
+                        particle.y = Math.random() * starfieldHeight;
+                    } else if (particle.x < -40) {
+                        particle.x = starfieldWidth + 40;
+                        particle.y = Math.random() * starfieldHeight;
+                    }
+                }
+
+                const twinkle = animate ? 0.62 + Math.sin(time * particle.sway * 3 + particle.phase) * 0.38 : 1;
+                const alpha = Math.max(0, particle.alpha * twinkle);
+                const size = particle.radius * 12;
+                const trailLength = Math.min(particle.radius * 14, 42);
+                const tailX = particle.x - (particle.vx / particle.speed) * trailLength;
+                const tailY = particle.y - (particle.vy / particle.speed) * trailLength;
+
+                starContext.lineCap = 'round';
+
+                starContext.globalAlpha = 1;
+                starContext.strokeStyle = `rgba(${particle.color}, ${alpha * 0.34})`;
+                starContext.lineWidth = Math.max(1, particle.radius * 1.6);
+                starContext.beginPath();
+                starContext.moveTo(tailX, tailY);
+                starContext.lineTo(particle.x, particle.y);
+                starContext.stroke();
+
+                starContext.strokeStyle = `rgba(${particle.color}, ${alpha * 0.8})`;
+                starContext.lineWidth = Math.max(0.5, particle.radius * 0.55);
+                starContext.beginPath();
+                starContext.moveTo(tailX, tailY);
+                starContext.lineTo(particle.x, particle.y);
+                starContext.stroke();
+
+                starContext.globalAlpha = alpha;
+                starContext.drawImage(particle.sprite, particle.x - size / 2, particle.y - size / 2, size, size);
+            });
+
+            starContext.globalAlpha = 1;
+        };
+
+        const drawShootingStars = (animate, frameScale, delta) => {
+            starContext.globalCompositeOperation = 'lighter';
+
+            for (let index = shootingStars.length - 1; index >= 0; index -= 1) {
+                const meteor = shootingStars[index];
+
+                if (animate) {
+                    meteor.age += delta;
+                    meteor.x += meteor.vx * frameScale;
+                    meteor.y += meteor.vy * frameScale;
+                }
+
+                const progress = meteor.age / meteor.maxLife;
+                const isOffscreen =
+                    meteor.y > starfieldHeight + 200 ||
+                    meteor.x < -200 ||
+                    meteor.x > starfieldWidth + 200;
+
+                if (animate && (progress >= 1 || isOffscreen)) {
+                    shootingStars.splice(index, 1);
+                    continue;
+                }
+
+                const fade = Math.max(0, Math.min(progress / 0.12, (1 - progress) / 0.28, 1));
+                const tailX = meteor.x - Math.cos(meteor.angle) * meteor.length;
+                const tailY = meteor.y - Math.sin(meteor.angle) * meteor.length;
+                const trail = starContext.createLinearGradient(tailX, tailY, meteor.x, meteor.y);
+                trail.addColorStop(0, `rgba(${meteor.color}, 0)`);
+                trail.addColorStop(0.62, `rgba(${meteor.color}, ${0.18 * fade})`);
+                trail.addColorStop(1, `rgba(${meteor.color}, ${0.85 * fade})`);
+
+                starContext.strokeStyle = trail;
+                starContext.lineCap = 'round';
+
+                starContext.globalAlpha = 0.28 * fade;
+                starContext.lineWidth = meteor.width * 4;
+                starContext.beginPath();
+                starContext.moveTo(tailX, tailY);
+                starContext.lineTo(meteor.x, meteor.y);
+                starContext.stroke();
+
+                starContext.globalAlpha = 1;
+                starContext.lineWidth = meteor.width;
+                starContext.beginPath();
+                starContext.moveTo(tailX, tailY);
+                starContext.lineTo(meteor.x, meteor.y);
+                starContext.stroke();
+
+                const glowSize = meteor.width * 18;
+                starContext.globalAlpha = 0.9 * fade;
+                starContext.drawImage(meteor.sprite, meteor.x - glowSize / 2, meteor.y - glowSize / 2, glowSize, glowSize);
+            }
+
+            starContext.globalAlpha = 1;
+            starContext.globalCompositeOperation = 'source-over';
+        };
+
+        const drawStarfield = (time, animate, delta = 16.667) => {
+            const frameScale = Math.min(delta / 16.667, 3);
+
+            starContext.clearRect(0, 0, starfieldWidth, starfieldHeight);
+
+            drawFlowParticles(time, animate, frameScale);
+
+            stars.forEach((star) => {
+                if (animate) {
+                    star.y -= star.speed * frameScale;
+                    star.x += star.drift * frameScale;
+
+                    if (star.y < -12) {
+                        star.y = starfieldHeight + 12;
+                        star.x = Math.random() * starfieldWidth;
+                    }
+
+                    if (star.x < -12) {
+                        star.x = starfieldWidth + 12;
+                    } else if (star.x > starfieldWidth + 12) {
+                        star.x = -12;
+                    }
+                }
+
+                const twinkle = animate ? 0.72 + Math.sin(time * star.twinkle + star.phase) * 0.28 : 1;
+                const size = star.radius * 9;
+
+                starContext.globalAlpha = Math.max(0, star.alpha * twinkle);
+                starContext.drawImage(star.sprite, star.x - size / 2, star.y - size / 2, size, size);
+            });
+
+            drawShootingStars(animate, frameScale, delta);
+
+            starContext.globalAlpha = 1;
+        };
+
+        const renderStarfield = (time) => {
+            starfieldFrame = null;
+
+            const delta = starfieldLastTime ? Math.min(time - starfieldLastTime, 64) : 16.667;
+            starfieldLastTime = time;
+
+            if (time >= nextShootingStarAt) {
+                spawnShootingStar();
+                nextShootingStarAt = time + randomBetween(3800, 8500);
+            }
+
+            drawStarfield(time, true, delta);
+            starfieldFrame = window.requestAnimationFrame(renderStarfield);
+        };
+
+        const stopStarfield = () => {
+            if (starfieldFrame !== null) {
+                window.cancelAnimationFrame(starfieldFrame);
+                starfieldFrame = null;
+            }
+
+            starfieldLastTime = 0;
+        };
+
+        const startStarfield = () => {
+            if (starfieldFrame !== null) {
+                return;
+            }
+
+            starfieldLastTime = 0;
+            starfieldFrame = window.requestAnimationFrame(renderStarfield);
+        };
+
+        const refreshStarfield = () => {
+            stopStarfield();
+            nextShootingStarAt = window.performance.now() + randomBetween(1500, 3800);
+            drawStarfield(0, false);
+            startStarfield();
+        };
+
+        const resizeStarfield = () => {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+            starfieldWidth = window.innerWidth;
+            starfieldHeight = window.innerHeight;
+            starCanvas.width = Math.round(starfieldWidth * dpr);
+            starCanvas.height = Math.round(starfieldHeight * dpr);
+            starContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+            seedStarfield();
+            refreshStarfield();
+        };
+
+        resizeStarfield();
+
+        window.addEventListener('resize', () => {
+            window.clearTimeout(starfieldResizeTimer);
+            starfieldResizeTimer = window.setTimeout(resizeStarfield, 150);
+        }, { passive: true });
     }
 
     /* ---------------------------------------------------------------------

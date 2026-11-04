@@ -5,11 +5,6 @@
 <header class="site-header" id="siteHeader">
     <nav class="navbar container" aria-label="Primary navigation">
         <a class="brand" href="#home" aria-label="{{ $person['name'] }} — home">
-            <span class="brand__mark" aria-hidden="true">{{ $person['initials'] }}</span>
-            <span class="brand__text">
-                <span class="brand__name">{{ $person['first_name'] }}</span>
-                <span class="brand__role">Portfolio</span>
-            </span>
         </a>
 
         <div class="navbar__links" id="navLinks">
