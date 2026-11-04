@@ -15,7 +15,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
 endobj
 6 0 obj
-<< /Length 5031 >>
+<< /Length 5096 >>
 stream
 1 1 1 rg 0.00 0.00 595.00 842.00 re f
 0.024 0.043 0.082 rg 0.00 690.00 595.00 152.00 re f
@@ -48,27 +48,28 @@ BT 0.08 0.12 0.18 rg /F2 8.80 Tf 48.00 410.37 Td (Professional:) Tj ET
 BT 0.16 0.20 0.27 rg /F1 8.80 Tf 118.00 410.37 Td (Communication, collaboration, time management, adaptability, attention to detail) Tj ET
 BT 0.12 0.32 0.72 rg /F2 10.00 Tf 48.00 382.37 Td (SELECTED PROJECTS) Tj ET
 0.80 0.86 0.94 RG 0.60 w 48.00 377.37 m 547.00 377.37 l S
-BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 359.37 Td (AbraKeeps) Tj ET
-BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 347.37 Td (Online marketplace for Abra's local delicacies and handicrafts; supports MSMEs and cultural heritage.) Tj ET
-BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 335.88 Td (PHP, Laravel, MySQL, JavaScript) Tj ET
-BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 316.88 Td (Technical Support Ticketing System) Tj ET
-BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 304.88 Td (Web-based helpdesk for faculty and staff to report, track, and resolve IT issues at DCCP - Bangued) Tj ET
-BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 291.40 Td (Campus.) Tj ET
-BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 279.91 Td (PHP, Laravel, MySQL, Tailwind CSS, Alpine.js) Tj ET
-BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 260.91 Td (Kusina ni Mama Reservation & Ordering System) Tj ET
-BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 248.91 Td (Restaurant system for table reservations, advance orders, kitchen preparation, and POS transactions.) Tj ET
-BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 237.43 Td (PHP, Laravel, MySQL, JavaScript) Tj ET
-BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 218.43 Td (Brew & Go) Tj ET
-BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 206.43 Td (Coffee shop ordering and management system with customer ordering and an admin dashboard.) Tj ET
-BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 194.94 Td (PHP, Laravel, MySQL, Bootstrap, JavaScript) Tj ET
-BT 0.12 0.32 0.72 rg /F2 10.00 Tf 48.00 175.94 Td (CERTIFICATES) Tj ET
-0.80 0.86 0.94 RG 0.60 w 48.00 170.94 m 547.00 170.94 l S
-BT 0.08 0.12 0.18 rg /F2 8.90 Tf 48.00 153.94 Td (Online Safety Through Netiquette) Tj ET
-BT 0.36 0.43 0.54 rg /F1 8.40 Tf 360.00 153.94 Td (DICT | July 2026) Tj ET
-BT 0.08 0.12 0.18 rg /F2 8.90 Tf 48.00 138.94 Td (Startup Now Cordillera) Tj ET
-BT 0.36 0.43 0.54 rg /F1 8.40 Tf 360.00 138.94 Td (Professional Development | September 2026) Tj ET
-BT 0.08 0.12 0.18 rg /F2 8.90 Tf 48.00 123.94 Td (Introduction to Modern AI) Tj ET
-BT 0.36 0.43 0.54 rg /F1 8.40 Tf 360.00 123.94 Td (Professional Development | October 2026) Tj ET
+BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 359.37 Td (Technical Support Ticketing System) Tj ET
+BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 347.37 Td (Web-based helpdesk for faculty and staff to report, track, and resolve IT issues at DCCP - Bangued) Tj ET
+BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 333.88 Td (Campus.) Tj ET
+BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 322.40 Td (PHP, Laravel, MySQL, Tailwind CSS, Alpine.js) Tj ET
+BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 303.40 Td (Personal DTR) Tj ET
+BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 291.40 Td (Private attendance workspace for tracking time in, breaks, and time out, with monthly reports and) Tj ET
+BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 277.91 Td (exports.) Tj ET
+BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 266.43 Td (PHP, Laravel, MySQL, JavaScript) Tj ET
+BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 247.43 Td (Kusina ni Mama Reservation & Ordering System) Tj ET
+BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 235.43 Td (Restaurant system for table reservations, advance orders, kitchen preparation, and POS transactions.) Tj ET
+BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 223.94 Td (PHP, Laravel, MySQL, JavaScript) Tj ET
+BT 0.08 0.12 0.18 rg /F2 9.40 Tf 48.00 204.94 Td (Brew & Go) Tj ET
+BT 0.16 0.20 0.27 rg /F1 8.70 Tf 48.00 192.94 Td (Coffee shop ordering and management system with customer ordering and an admin dashboard.) Tj ET
+BT 0.18 0.40 0.78 rg /F1 8.20 Tf 48.00 181.46 Td (PHP, Laravel, MySQL, Bootstrap, JavaScript) Tj ET
+BT 0.12 0.32 0.72 rg /F2 10.00 Tf 48.00 162.46 Td (CERTIFICATES) Tj ET
+0.80 0.86 0.94 RG 0.60 w 48.00 157.46 m 547.00 157.46 l S
+BT 0.08 0.12 0.18 rg /F2 8.90 Tf 48.00 140.46 Td (Online Safety Through Netiquette) Tj ET
+BT 0.36 0.43 0.54 rg /F1 8.40 Tf 360.00 140.46 Td (DICT | July 2026) Tj ET
+BT 0.08 0.12 0.18 rg /F2 8.90 Tf 48.00 125.46 Td (Startup Now Cordillera) Tj ET
+BT 0.36 0.43 0.54 rg /F1 8.40 Tf 360.00 125.46 Td (Professional Development | September 2026) Tj ET
+BT 0.08 0.12 0.18 rg /F2 8.90 Tf 48.00 110.46 Td (Introduction to Modern AI) Tj ET
+BT 0.36 0.43 0.54 rg /F1 8.40 Tf 360.00 110.46 Td (Professional Development | October 2026) Tj ET
 0.024 0.043 0.082 rg 0.00 0.00 595.00 34.00 re f
 BT 0.72 0.82 0.94 rg /F1 8.00 Tf 48.00 13.00 Td (Dimple Kate B. Bodonia | Curriculum Vitae | Generated from the portfolio content) Tj ET
 endstream
@@ -85,5 +86,5 @@ xref
 trailer
 << /Size 7 /Root 1 0 R >>
 startxref
-5479
+5544
 %%EOF

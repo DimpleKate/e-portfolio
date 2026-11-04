@@ -622,29 +622,6 @@
     }, { passive: true });
 
     /* ---------------------------------------------------------------------
-       Project filters
-    --------------------------------------------------------------------- */
-    const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
-    const projectCards = Array.from(document.querySelectorAll('[data-category]'));
-
-    filterButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            const filter = button.dataset.filter;
-
-            filterButtons.forEach((item) => {
-                const active = item === button;
-                item.classList.toggle('is-active', active);
-                item.setAttribute('aria-pressed', active ? 'true' : 'false');
-            });
-
-            projectCards.forEach((card) => {
-                const visible = filter === 'all' || card.dataset.category === filter;
-                card.classList.toggle('is-hidden', !visible);
-            });
-        });
-    });
-
-    /* ---------------------------------------------------------------------
        Contact form feedback
     --------------------------------------------------------------------- */
     const contactForm = document.querySelector('.contact-form');

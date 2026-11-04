@@ -27,7 +27,10 @@ class PortfolioTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Dimple-Kate-Bodonia-CV.pdf');
-        $response->assertSee('AbraKeeps');
+        $response->assertSee('Personal DTR');
+        $response->assertDontSee('AbraKeeps');
+        $response->assertDontSee('All projects');
+        $response->assertDontSee('Web apps');
         $response->assertSee('Kusina ni Mama Reservation &amp; Ordering System', false);
         $response->assertSee('Brew &amp; Go', false);
         $response->assertSee('Technical Support Ticketing System');

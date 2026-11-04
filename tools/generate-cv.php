@@ -123,8 +123,8 @@ $sectionTitle('Selected Projects', $y);
 $y -= 23;
 
 $projects = [
-    ['AbraKeeps', 'Online marketplace for Abra’s local delicacies and handicrafts; supports MSMEs and cultural heritage.', 'PHP, Laravel, MySQL, JavaScript'],
     ['Technical Support Ticketing System', 'Web-based helpdesk for faculty and staff to report, track, and resolve IT issues at DCCP – Bangued Campus.', 'PHP, Laravel, MySQL, Tailwind CSS, Alpine.js'],
+    ['Personal DTR', 'Private attendance workspace for tracking time in, breaks, and time out, with monthly reports and exports.', 'PHP, Laravel, MySQL, JavaScript'],
     ['Kusina ni Mama Reservation & Ordering System', 'Restaurant system for table reservations, advance orders, kitchen preparation, and POS transactions.', 'PHP, Laravel, MySQL, JavaScript'],
     ['Brew & Go', 'Coffee shop ordering and management system with customer ordering and an admin dashboard.', 'PHP, Laravel, MySQL, Bootstrap, JavaScript'],
 ];

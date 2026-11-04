@@ -14,22 +14,9 @@
             <p class="section-head__aside">{{ $projects['intro'] }}</p>
         </div>
 
-        <div class="project-filters reveal" role="group" aria-label="Filter projects">
-            @foreach ($projects['filters'] as $filter)
-                <button
-                    class="filter-button {{ $loop->first ? 'is-active' : '' }}"
-                    type="button"
-                    data-filter="{{ $filter['key'] }}"
-                    aria-pressed="{{ $loop->first ? 'true' : 'false' }}"
-                >
-                    {{ $filter['label'] }}
-                </button>
-            @endforeach
-        </div>
-
         <div class="projects__grid" id="projectsGrid">
             @foreach ($projects['items'] as $project)
-                <article class="project-card reveal" data-category="{{ $project['category_key'] }}" data-project-index="{{ $loop->index }}">
+                <article class="project-card reveal" data-project-index="{{ $loop->index }}">
                     <div class="project-card__media">
                         <img
                             src="{{ $project['thumbnail_url'] }}"
@@ -54,7 +41,7 @@
                             <span>{{ $project['year'] }}</span>
                         </div>
                         <h3>{{ $project['title'] }}</h3>
-                        <p>{{ $project['description'] }}</p>
+                        <p>{!! nl2br(e($project['description'])) !!}</p>
 
                         <div class="tag-list">
                             @foreach ($project['technologies'] as $technology)
