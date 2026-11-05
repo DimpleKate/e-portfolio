@@ -540,6 +540,46 @@
             heroPortrait.style.setProperty('--hero-drag-y', `${y}px`);
         };
 
+        const heroFace = heroPortrait.querySelector('img');
+        const faceSources = {
+            neutral: '/assets/images/neutral.png',
+            left: '/assets/images/left.png',
+            right: '/assets/images/right.png',
+            up: '/assets/images/up.png',
+            down: '/assets/images/down.png',
+            happy: '/assets/images/happy-eyes.png',
+            wink: '/assets/images/wink.png',
+            serious: '/assets/images/serious.png',
+        };
+
+        const setHeroFace = (name) => {
+            if (!heroFace || !faceSources[name]) {
+                return;
+            }
+
+            const nextSource = faceSources[name];
+
+            if (!heroFace.getAttribute('src')?.endsWith(nextSource)) {
+                heroFace.setAttribute('src', nextSource);
+            }
+        };
+
+        const faceFromDirection = (clientX, clientY) => {
+            const rect = heroPortrait.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const deltaX = clientX - centerX;
+            const deltaY = clientY - centerY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                return deltaX < 0 ? 'left' : 'right';
+            }
+
+            return deltaY < 0 ? 'up' : 'down';
+        };
+
+        setHeroFace('neutral');
+
         heroPortrait.addEventListener('pointerdown', (event) => {
             isDragging = true;
             pointerId = event.pointerId;
@@ -547,6 +587,7 @@
             heroPortrait.classList.add('is-dragging');
             startX = event.clientX - currentX;
             startY = event.clientY - currentY;
+            setHeroFace('happy');
         });
 
         heroPortrait.addEventListener('pointermove', (event) => {
@@ -557,6 +598,16 @@
             currentX = Math.max(-maxDrag, Math.min(maxDrag, event.clientX - startX));
             currentY = Math.max(-maxDrag, Math.min(maxDrag, event.clientY - startY));
             applyDrag(currentX, currentY);
+
+            const distance = Math.hypot(currentX, currentY);
+
+            if (distance > 95) {
+                setHeroFace('serious');
+            } else if (distance > 45) {
+                setHeroFace('wink');
+            } else {
+                setHeroFace('happy');
+            }
         });
 
         const endDrag = (event) => {
@@ -574,7 +625,22 @@
 
             heroPortrait.style.transition = '';
             applyDrag(0, 0);
+            setHeroFace('neutral');
         };
+
+        heroSection?.addEventListener('pointermove', (event) => {
+            if (isDragging) {
+                return;
+            }
+
+            setHeroFace(faceFromDirection(event.clientX, event.clientY));
+        });
+
+        heroSection?.addEventListener('pointerleave', () => {
+            if (!isDragging) {
+                setHeroFace('neutral');
+            }
+        });
 
         heroPortrait.addEventListener('pointerup', endDrag);
         heroPortrait.addEventListener('pointercancel', endDrag);

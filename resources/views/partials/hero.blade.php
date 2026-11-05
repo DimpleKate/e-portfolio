@@ -65,11 +65,12 @@
 
                 <div class="hero__portrait">
                     <img
-                        src="{{ $person['photo_url'] }}"
+                        src="{{ asset('assets/images/neutral.png') }}"
                         alt="{{ $person['photo_alt'] }}"
                         width="720"
                         height="880"
                         fetchpriority="high"
+                        data-hero-face
                     >
                     <div class="hero__portrait-shine" aria-hidden="true"></div>
                 </div>
