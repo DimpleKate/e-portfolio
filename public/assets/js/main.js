@@ -633,6 +633,137 @@
 
     animateCursorGlow();
 
+    /* ---------------------------------------------------------------------
+       Flowing smoke canvas trail
+    --------------------------------------------------------------------- */
+    const smokeCanvas = document.createElement('canvas');
+    smokeCanvas.className = 'cosmic-smoke-canvas';
+    document.body.appendChild(smokeCanvas);
+    const smokeCtx = smokeCanvas.getContext('2d');
+
+    const smokeColorsRgb = [
+        [64, 21, 47],
+        [201, 163, 182],
+        [143, 163, 201],
+        [182, 163, 201],
+    ];
+
+    const resizeSmokeCanvas = () => {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        smokeCanvas.width = Math.floor(window.innerWidth * ratio);
+        smokeCanvas.height = Math.floor(window.innerHeight * ratio);
+        smokeCanvas.style.width = `${window.innerWidth}px`;
+        smokeCanvas.style.height = `${window.innerHeight}px`;
+        smokeCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    resizeSmokeCanvas();
+    window.addEventListener('resize', resizeSmokeCanvas);
+
+    const smokeParticles = [];
+    let smokePointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    let smokeVelocity = { x: 0, y: 0 };
+    let lastSmokePointer = { x: smokePointer.x, y: smokePointer.y };
+    let lastSmokeEmit = 0;
+
+    const emitSmoke = (x, y, burst = false) => {
+        const count = burst ? 8 : 1;
+
+        for (let index = 0; index < count; index += 1) {
+            const color = smokeColorsRgb[Math.floor(Math.random() * smokeColorsRgb.length)];
+            const angle = burst
+                ? (Math.PI * 2 * index) / count + (Math.random() - 0.5) * 0.5
+                : Math.atan2(smokeVelocity.y, smokeVelocity.x) + Math.PI + (Math.random() - 0.5) * 1.2;
+            const speed = burst ? 0.4 + Math.random() * 1.0 : 0.05 + Math.random() * 0.25;
+            const size = burst ? 8 + Math.random() * 10 : 6 + Math.random() * 8;
+
+            smokeParticles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size,
+                life: 1,
+                decay: burst ? 0.02 + Math.random() * 0.015 : 0.018 + Math.random() * 0.015,
+                color,
+            });
+        }
+    };
+
+    window.addEventListener('mousemove', (event) => {
+        smokeVelocity.x = event.clientX - lastSmokePointer.x;
+        smokeVelocity.y = event.clientY - lastSmokePointer.y;
+        lastSmokePointer.x = event.clientX;
+        lastSmokePointer.y = event.clientY;
+        smokePointer.x = event.clientX;
+        smokePointer.y = event.clientY;
+    }, { passive: true });
+
+    window.addEventListener('click', (event) => {
+        emitSmoke(event.clientX, event.clientY, true);
+    });
+
+    const animateSmoke = () => {
+        smokeCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        const now = performance.now();
+
+        if (now - lastSmokeEmit > 32) {
+            const speed = Math.hypot(smokeVelocity.x, smokeVelocity.y);
+
+            if (speed > 1.2) {
+                emitSmoke(smokePointer.x, smokePointer.y, false);
+            }
+
+            lastSmokeEmit = now;
+        }
+
+        smokeVelocity.x *= 0.82;
+        smokeVelocity.y *= 0.82;
+
+        for (let index = smokeParticles.length - 1; index >= 0; index -= 1) {
+            const particle = smokeParticles[index];
+
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.vx *= 0.97;
+            particle.vy *= 0.97;
+            particle.size *= 1.012;
+            particle.life -= particle.decay;
+
+            if (particle.life <= 0) {
+                smokeParticles.splice(index, 1);
+                continue;
+            }
+
+            const alpha = Math.max(0, particle.life) * 0.22;
+            const gradient = smokeCtx.createRadialGradient(
+                particle.x,
+                particle.y,
+                0,
+                particle.x,
+                particle.y,
+                particle.size
+            );
+            const [r, g, b] = particle.color;
+
+            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha})`);
+            gradient.addColorStop(0.45, `rgba(${r}, ${g}, ${b}, ${alpha * 0.45})`);
+            gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
+            smokeCtx.globalCompositeOperation = 'lighter';
+            smokeCtx.fillStyle = gradient;
+            smokeCtx.beginPath();
+            smokeCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            smokeCtx.fill();
+        }
+
+        smokeCtx.globalCompositeOperation = 'source-over';
+        window.requestAnimationFrame(animateSmoke);
+    };
+
+    animateSmoke();
+
     const tiltTargets = document.querySelectorAll('.skill-card, .project-card, .certificate-card, .floating-card');
 
     tiltTargets.forEach((element) => {
@@ -1286,7 +1417,7 @@
 
             if (time >= nextShootingStarAt) {
                 spawnShootingStar();
-                nextShootingStarAt = time + randomBetween(3800, 8500);
+                nextShootingStarAt = time + randomBetween(1900, 2100);
             }
 
             drawStarfield(time, true, delta);
@@ -1313,7 +1444,7 @@
 
         const refreshStarfield = () => {
             stopStarfield();
-            nextShootingStarAt = window.performance.now() + randomBetween(1500, 3800);
+            nextShootingStarAt = window.performance.now() + randomBetween(1000, 2000);
             drawStarfield(0, false);
             startStarfield();
         };
