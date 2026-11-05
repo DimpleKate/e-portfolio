@@ -2,7 +2,6 @@
     $person = $portfolio['person'];
     $hero = $portfolio['hero'];
     $socials = $portfolio['socials'];
-    $certificateStat = collect($portfolio['about']['stats'])->firstWhere('label', 'Certificates earned');
 @endphp
 <section class="hero section" id="home" aria-labelledby="hero-title">
     <div class="container hero__inner">
@@ -59,6 +58,11 @@
                 <div class="hero__orbit hero__orbit--one" aria-hidden="true"></div>
                 <div class="hero__orbit hero__orbit--two" aria-hidden="true"></div>
 
+                <div class="hero__particles" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span>
+                </div>
+
                 <div class="hero__portrait">
                     <img
                         src="{{ $person['photo_url'] }}"
@@ -70,34 +74,7 @@
                     <div class="hero__portrait-shine" aria-hidden="true"></div>
                 </div>
 
-                <div class="floating-card floating-card--top">
-                    <span class="floating-card__icon"><x-icon name="code" :size="18" /></span>
-                    <span>
-                        <strong>Laravel + PHP</strong>
-                        <small>Building for the web</small>
-                    </span>
-                </div>
 
-                <div class="floating-card floating-card--bottom">
-                    <span class="floating-card__icon"><x-icon name="graduation" :size="18" /></span>
-                    <span>
-                        <strong>BS Information Technology</strong>
-                        <small>Data Center College</small>
-                    </span>
-                </div>
-
-                <div class="floating-card floating-card--side">
-                    <span class="floating-card__icon"><x-icon name="sparkle" :size="18" /></span>
-                    <span>
-                        <strong>{{ $certificateStat['value'] ?? '12' }} Certificates</strong>
-                        <small>Earned so far</small>
-                    </span>
-                </div>
-
-                <div class="hero__badge" aria-hidden="true">
-                    <span>Open</span>
-                    <span>to work</span>
-                </div>
             </div>
         </div>
     </div>

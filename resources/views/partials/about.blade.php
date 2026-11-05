@@ -19,7 +19,7 @@
             <div class="about__visual reveal">
                 <div class="about__image-card">
                     <img
-                        src="{{ $person['photo_url'] }}"
+                        src="{{ asset('assets/images/about.jpg') }}"
                         alt="{{ $person['photo_alt'] }}"
                         width="720"
                         height="880"

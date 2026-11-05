@@ -4,7 +4,7 @@
     $socials = $portfolio['socials'];
     $cssVersion = file_exists(public_path('assets/css/style.css')) ? filemtime(public_path('assets/css/style.css')) : time();
     $jsVersion = file_exists(public_path('assets/js/main.js')) ? filemtime(public_path('assets/js/main.js')) : time();
-    $faviconVersion = file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : time();
+    $faviconVersion = file_exists(public_path('favicon.jpg')) ? filemtime(public_path('favicon.jpg')) : time();
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -35,10 +35,8 @@
     <meta name="twitter:description" content="{{ $meta['description'] }}">
     <meta name="twitter:image" content="{{ $meta['og_image_url'] }}">
 
-    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ $faviconVersion }}" sizes="any">
-    <link rel="icon" href="{{ asset('favicon-32x32.png') }}?v={{ $faviconVersion }}" sizes="32x32" type="image/png">
-    <link rel="icon" href="{{ asset('favicon-16x16.png') }}?v={{ $faviconVersion }}" sizes="16x16" type="image/png">
-    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v={{ $faviconVersion }}">
+    <link rel="icon" href="{{ asset('favicon.jpg') }}?v={{ $faviconVersion }}" sizes="any" type="image/jpeg">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.jpg') }}?v={{ $faviconVersion }}">
     <link rel="manifest" href="{{ asset('site.webmanifest') }}?v={{ $faviconVersion }}">
 
     <link rel="preload" href="{{ asset('assets/manrope-latin.woff2') }}" as="font" type="font/woff2" crossorigin>

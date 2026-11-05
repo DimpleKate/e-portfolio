@@ -25,15 +25,6 @@
                             height="760"
                             loading="lazy"
                         >
-                        <button
-                            class="project-card__preview"
-                            type="button"
-                            data-gallery-open="{{ $loop->index }}"
-                            aria-label="Open {{ $project['title'] }} screenshot gallery"
-                        >
-                            <x-icon name="eye" :size="18" />
-                            <span>{{ count($project['images']) }} {{ Str::plural('screenshot', count($project['images'])) }}</span>
-                        </button>
                     </div>
 
                     <div class="project-card__body">
@@ -50,11 +41,6 @@
                         </div>
 
                         <div class="project-card__actions">
-                            <button class="button button--small button--outline" type="button" data-gallery-open="{{ $loop->index }}">
-                                <x-icon name="eye" :size="15" />
-                                Gallery
-                            </button>
-
                             @if ($project['live_url'])
                                 <a class="button button--small button--ghost" href="{{ $project['live_url'] }}" target="_blank" rel="noopener noreferrer">
                                     Live demo
