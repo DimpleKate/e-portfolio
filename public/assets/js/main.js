@@ -404,7 +404,7 @@
     };
 
     const animateHeroTilt = () => {
-        const easing = 0.14;
+        const easing = 0.32;
 
         heroTiltState.x += (heroTiltState.targetX - heroTiltState.x) * easing;
         heroTiltState.y += (heroTiltState.targetY - heroTiltState.y) * easing;
@@ -552,6 +552,12 @@
             serious: '/assets/images/serious.png',
         };
 
+        Object.values(faceSources).forEach((source) => {
+            const preloadImage = new Image();
+            preloadImage.decoding = 'sync';
+            preloadImage.src = source;
+        });
+
         const setHeroFace = (name) => {
             if (!heroFace || !faceSources[name]) {
                 return;
@@ -560,14 +566,20 @@
             const nextSource = faceSources[name];
 
             if (!heroFace.getAttribute('src')?.endsWith(nextSource)) {
+                heroFace.decoding = 'sync';
                 heroFace.setAttribute('src', nextSource);
             }
         };
 
+        let portraitRect = heroPortrait.getBoundingClientRect();
+
+        const updatePortraitRect = () => {
+            portraitRect = heroPortrait.getBoundingClientRect();
+        };
+
         const faceFromDirection = (clientX, clientY) => {
-            const rect = heroPortrait.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
+            const centerX = portraitRect.left + portraitRect.width / 2;
+            const centerY = portraitRect.top + portraitRect.height / 2;
             const deltaX = clientX - centerX;
             const deltaY = clientY - centerY;
 
@@ -577,6 +589,9 @@
 
             return deltaY < 0 ? 'up' : 'down';
         };
+
+        heroSection?.addEventListener('pointerenter', updatePortraitRect);
+        window.addEventListener('resize', updatePortraitRect);
 
         setHeroFace('neutral');
 

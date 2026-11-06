@@ -693,7 +693,7 @@ ul {
     transform:
         rotateX(calc(var(--hero-tilt-x, 0) * 1deg))
         rotateY(calc(var(--hero-tilt-y, 0) * 1deg));
-    transition: transform 0.12s ease-out;
+    transition: none;
 }
 
 .hero__visual::before {
@@ -813,6 +813,11 @@ ul {
 
 .hero__portrait:hover {
     box-shadow: var(--shadow-accent), var(--shadow-card), 0 0 80px -26px rgba(var(--accent-soft-rgb), 0.6);
+}
+
+.hero__portrait.is-dragging {
+    transition: box-shadow 0.3s ease, filter 0.3s ease;
+    cursor: grabbing;
 }
 
 .hero__portrait.is-rotating {

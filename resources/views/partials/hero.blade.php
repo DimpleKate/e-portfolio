@@ -70,6 +70,8 @@
                         width="720"
                         height="880"
                         fetchpriority="high"
+                        decoding="sync"
+                        loading="eager"
                         data-hero-face
                     >
                     <div class="hero__portrait-shine" aria-hidden="true"></div>
