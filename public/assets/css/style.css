@@ -1244,7 +1244,8 @@ ul {
 }
 
 /* Education */
-.education__grid {
+.education__grid,
+.experience__grid {
     display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
     gap: 54px;
@@ -2692,14 +2693,82 @@ ul {
 
 /* Reveal animations */
 .js .reveal {
+    --reveal-y: 24px;
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    translate: 0 var(--reveal-y);
+    will-change: opacity, translate;
 }
 
 .js .reveal.is-visible {
     opacity: 1;
-    transform: translateY(0);
+    translate: none;
+    will-change: auto;
+}
+
+/* Intro loader */
+.intro-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    place-items: center;
+    background:
+        radial-gradient(circle at 50% 42%, rgba(var(--accent-rgb), 0.22), transparent 58%),
+        var(--navy-900);
+    color: var(--text-strong);
+}
+
+.js .intro-loader {
+    display: grid;
+}
+
+.intro-loader__content {
+    display: grid;
+    justify-items: center;
+    gap: 20px;
+}
+
+.intro-loader__monogram {
+    display: flex;
+    gap: 0.02em;
+    font-size: clamp(5.5rem, 20vw, 11rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    line-height: 0.85;
+}
+
+.intro-loader__letter {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-soft), var(--accent-bright));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+.intro-loader__line {
+    width: 140px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+}
+
+.intro-loader__tag {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .intro-loader {
+        display: none;
+    }
 }
 
 /* Responsive */
@@ -2818,6 +2887,7 @@ ul {
 
     .about__grid,
     .education__grid,
+    .experience__grid,
     .skills__grid,
     .contact__grid {
         grid-template-columns: 1fr;
@@ -3104,7 +3174,8 @@ ul {
 
     .js .reveal {
         opacity: 1;
-        transform: none;
+        translate: none;
+        --reveal-y: 0px;
     }
 
     .site-background,
@@ -3188,6 +3259,7 @@ ul {
 
 .about__grid,
 .education__grid,
+.experience__grid,
 .skills__grid,
 .contact__grid {
     gap: 36px;

@@ -19,6 +19,7 @@ class PortfolioTest extends TestCase
         $response->assertSee('id="tech-stack"', false);
         $response->assertSee('id="certificates"', false);
         $response->assertSee('id="projects"', false);
+        $response->assertSee('id="experience"', false);
         $response->assertSee('id="contact"', false);
     }
 
@@ -108,15 +109,21 @@ class PortfolioTest extends TestCase
             ->assertSee('Sitemap:');
     }
 
-    public function test_portfolio_section_renders_tabs_for_projects_certificates_and_tech_stack(): void
+    public function test_portfolio_section_renders_tabs_for_projects_certificates_experience_and_tech_stack(): void
     {
         $response = $this->get('/');
 
         $response->assertOk();
         $response->assertSee('href="#portfolio"', false);
         $response->assertSee('data-section="portfolio"', false);
-        $response->assertSee('data-portfolio-tab="projects"', false);
-        $response->assertSee('data-portfolio-tab="certificates"', false);
-        $response->assertSee('data-portfolio-tab="tech-stack"', false);
+        $response->assertSeeInOrder([
+            'data-portfolio-tab="projects"',
+            'data-portfolio-tab="certificates"',
+            'data-portfolio-tab="experience"',
+            'data-portfolio-tab="tech-stack"',
+        ], false);
+        $response->assertSee('OJT / Intern');
+        $response->assertSee('DepEd – Personnel Section');
+        $response->assertSee('2026 – Present');
     }
 }

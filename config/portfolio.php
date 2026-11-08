@@ -125,11 +125,35 @@ return [
         'eyebrow' => 'Portfolio',
         'heading' => 'A closer look at',
         'heading_accent' => 'what I build.',
-        'intro' => 'Explore the projects I have built, the certificates I have earned, and the tools I use every day.',
+        'intro' => 'Explore the projects I have built, the certificates I have earned, the experience I am gaining, and the tools I use every day.',
         'tabs' => [
             ['label' => 'Projects', 'target' => 'projects', 'partial' => 'projects'],
             ['label' => 'Certificates', 'target' => 'certificates', 'partial' => 'certificates'],
+            ['label' => 'Experience', 'target' => 'experience', 'partial' => 'experience'],
             ['label' => 'Tech Stack', 'target' => 'tech-stack', 'partial' => 'tech-stack'],
+        ],
+    ],
+
+    'experience' => [
+        'eyebrow' => 'Experience',
+        'heading' => 'Learning through',
+        'heading_accent' => 'real-world work.',
+        'intro' => 'A look at the hands-on experience shaping how I work, communicate, and collaborate in a professional environment.',
+        'snapshot_title' => 'Internship snapshot',
+        'snapshot_items' => [
+            ['label' => 'Role', 'value' => 'OJT / Intern'],
+            ['label' => 'Agency', 'value' => 'DepEd'],
+            ['label' => 'Section', 'value' => 'Personnel Section'],
+            ['label' => 'Status', 'value' => 'Ongoing'],
+        ],
+        'items' => [
+            [
+                'role' => 'OJT / Intern',
+                'organization' => 'DepEd – Personnel Section',
+                'period' => '2026 – Present',
+                'description' => 'Currently gaining hands-on experience in a professional work environment at the Personnel Section. Assisting with daily tasks, learning workplace processes, and developing technical, communication, and teamwork skills.',
+                'current' => true,
+            ],
         ],
     ],
 

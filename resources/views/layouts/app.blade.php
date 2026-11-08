@@ -4,6 +4,7 @@
     $socials = $portfolio['socials'];
     $cssVersion = file_exists(public_path('assets/css/style.css')) ? filemtime(public_path('assets/css/style.css')) : time();
     $jsVersion = file_exists(public_path('assets/js/main.js')) ? filemtime(public_path('assets/js/main.js')) : time();
+    $gsapVersion = file_exists(public_path('assets/js/vendor/gsap.min.js')) ? filemtime(public_path('assets/js/vendor/gsap.min.js')) : time();
     $faviconVersion = file_exists(public_path('favicon.jpg')) ? filemtime(public_path('favicon.jpg')) : time();
 @endphp
 <!DOCTYPE html>
@@ -86,6 +87,17 @@
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
 
+    <div class="intro-loader" id="introLoader" aria-hidden="true">
+        <div class="intro-loader__content">
+            <div class="intro-loader__monogram" aria-label="DB">
+                <span class="intro-loader__letter">D</span>
+                <span class="intro-loader__letter">B</span>
+            </div>
+            <span class="intro-loader__line" aria-hidden="true"></span>
+            <p class="intro-loader__tag">Portfolio</p>
+        </div>
+    </div>
+
     <div class="site-background" aria-hidden="true">
         <div class="site-background__grid"></div>
         <div class="site-background__glow site-background__glow--one"></div>
@@ -125,6 +137,8 @@
         </div>
     </div>
 
+    <script src="{{ asset('assets/js/vendor/gsap.min.js') }}?v={{ $gsapVersion }}" defer></script>
+    <script src="{{ asset('assets/js/vendor/ScrollTrigger.min.js') }}?v={{ $gsapVersion }}" defer></script>
     <script src="{{ asset('assets/js/main.js') }}?v={{ $jsVersion }}" defer></script>
 </body>
 </html>

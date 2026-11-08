@@ -9,8 +9,155 @@
     const navLinks = document.getElementById('navLinks');
     const navLinkItems = Array.from(document.querySelectorAll('.nav-link'));
     const sections = Array.from(document.querySelectorAll('main > section[id]'));
-    const revealItems = Array.from(document.querySelectorAll('.reveal'));
+
+    const revealTargets = [
+        '.section-head',
+        '.hero__copy > *',
+        '.hero__visual',
+        '.about__visual',
+        '.about__content',
+        '.about__bio p',
+        '.about__objective',
+        '.about__interests',
+        '.about__strengths .strength',
+        '.about__stats .stat',
+        '.timeline__item',
+        '.snapshot',
+        '.portfolio-tabs',
+        '.skill-card',
+        '.certificate-card',
+        '.project-card',
+        '.contact__info',
+        '.contact-card',
+        '.contact__socials',
+        '.contact__availability',
+        '.contact__form-wrap',
+        '.contact__form-head',
+        '.contact-form .form-row > .form-field',
+        '.contact-form > .form-field',
+        '.contact-form > .button--wide',
+        '.contact-form > .contact-form__note',
+        '.footer__brand',
+        '.footer__column',
+        '.footer__bottom',
+    ];
+
+    const prepareRevealItems = () => {
+        revealTargets.forEach((selector) => {
+            document.querySelectorAll(selector).forEach((element) => {
+                element.classList.add('reveal');
+            });
+        });
+
+        const groups = new Map();
+
+        document.querySelectorAll('.reveal').forEach((item) => {
+            const parent = item.parentElement;
+
+            if (!parent) {
+                return;
+            }
+
+            if (!groups.has(parent)) {
+                groups.set(parent, []);
+            }
+
+            groups.get(parent).push(item);
+        });
+
+        groups.forEach((items) => {
+            items.forEach((item, index) => {
+                item.dataset.revealDelay = String(Math.min(index, 7) * 0.07);
+            });
+        });
+    };
+
+    prepareRevealItems();
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealItems = Array.from(document.querySelectorAll('.reveal'));
+    const revealTriggers = new Map();
+    const revealStates = new WeakMap();
+
+    const finishReveal = (item) => {
+        item.classList.add('is-visible');
+        item.style.removeProperty('--reveal-y');
+        item.style.removeProperty('opacity');
+        item.style.removeProperty('will-change');
+        revealStates.set(item, 'done');
+    };
+
+    const killRevealTrigger = (item) => {
+        revealTriggers.get(item)?.kill();
+        revealTriggers.delete(item);
+    };
+
+    const showRevealImmediately = (item) => {
+        revealStates.set(item, 'done');
+        killRevealTrigger(item);
+        item.classList.add('is-visible');
+    };
+
+    const playReveal = (item, delay = Number(item.dataset.revealDelay || 0)) => {
+        if (revealStates.has(item)) {
+            return;
+        }
+
+        revealStates.set(item, 'playing');
+        killRevealTrigger(item);
+
+        if (reduceMotion || !window.gsap) {
+            showRevealImmediately(item);
+            return;
+        }
+
+        window.gsap.fromTo(
+            item,
+            { '--reveal-y': '24px', opacity: 0 },
+            {
+                '--reveal-y': '0px',
+                opacity: 1,
+                duration: 0.7,
+                ease: 'power3.out',
+                delay,
+                overwrite: true,
+                onComplete: () => finishReveal(item),
+            }
+        );
+    };
+
+    const setupRevealAnimations = () => {
+        if (!revealItems.length) {
+            return;
+        }
+
+        if (reduceMotion || !window.gsap || !window.ScrollTrigger) {
+            revealItems.forEach(showRevealImmediately);
+            return;
+        }
+
+        const { gsap, ScrollTrigger } = window;
+        gsap.registerPlugin(ScrollTrigger);
+
+        revealItems.forEach((item) => {
+            if (item.closest('[hidden]')) {
+                return;
+            }
+
+            const trigger = ScrollTrigger.create({
+                trigger: item,
+                start: 'top 88%',
+                once: true,
+                onEnter: () => playReveal(item),
+            });
+
+            revealTriggers.set(item, trigger);
+        });
+
+        window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+    };
+
+    setupRevealAnimations();
 
     const lockScroll = () => {
         body.style.overflow = 'hidden';
@@ -19,6 +166,64 @@
     const unlockScroll = () => {
         body.style.overflow = '';
     };
+
+    /* ---------------------------------------------------------------------
+       Animated intro (DB monogram)
+    --------------------------------------------------------------------- */
+    const introLoader = document.getElementById('introLoader');
+
+    if (introLoader) {
+        if (reduceMotion || !window.gsap) {
+            introLoader.remove();
+        } else {
+            lockScroll();
+
+            const introTimeline = window.gsap.timeline({
+                onComplete: () => {
+                    introLoader.remove();
+                    unlockScroll();
+
+                    if (window.ScrollTrigger) {
+                        window.ScrollTrigger.refresh();
+                    }
+                },
+            });
+
+            introTimeline
+                .fromTo('.intro-loader__letter', {
+                    opacity: 0,
+                    y: 52,
+                    scale: 0.72,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    stagger: 0.16,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                })
+                .to('.intro-loader__line', {
+                    scaleX: 1,
+                    duration: 0.55,
+                    ease: 'power2.out',
+                }, '-=0.4')
+                .fromTo('.intro-loader__tag', {
+                    opacity: 0,
+                    y: 12,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.45,
+                    ease: 'power2.out',
+                }, '-=0.35')
+                .to(introLoader, {
+                    autoAlpha: 0,
+                    duration: 0.7,
+                    ease: 'power2.inOut',
+                    delay: 0.45,
+                });
+        }
+    }
 
     /* ---------------------------------------------------------------------
        Header, progress, and back-to-top
@@ -112,7 +317,7 @@
 
     if (portfolioTabs.length && portfolioPanels.length) {
         const revealPanelItems = (panel) => {
-            panel.querySelectorAll('.reveal').forEach((item) => item.classList.add('is-visible'));
+            panel.querySelectorAll('.reveal').forEach((item) => playReveal(item));
         };
 
         const activatePortfolioTab = (target, options = {}) => {
@@ -229,32 +434,6 @@
         );
 
         sections.forEach((section) => sectionObserver.observe(section));
-    }
-
-    /* ---------------------------------------------------------------------
-       Reveal on scroll
-    --------------------------------------------------------------------- */
-    if (reduceMotion || !('IntersectionObserver' in window)) {
-        revealItems.forEach((item) => item.classList.add('is-visible'));
-    } else {
-        const revealObserver = new IntersectionObserver(
-            (entries, observer) => {
-                entries.forEach((entry) => {
-                    if (!entry.isIntersecting) {
-                        return;
-                    }
-
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                });
-            },
-            {
-                threshold: 0.12,
-                rootMargin: '0px 0px -40px 0px',
-            }
-        );
-
-        revealItems.forEach((item) => revealObserver.observe(item));
     }
 
     /* ---------------------------------------------------------------------
