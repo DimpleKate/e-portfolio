@@ -522,24 +522,11 @@
     reduceMotionQuery.addEventListener?.('change', updateHeroTiltPreference);
 
     /* ---------------------------------------------------------------------
-       Draggable hero portrait (movable ID card)
+       Reactive hero portrait (cursor-based expressions)
     --------------------------------------------------------------------- */
     const heroPortrait = document.querySelector('.hero__portrait');
 
     if (heroPortrait) {
-        let isDragging = false;
-        let pointerId = null;
-        let startX = 0;
-        let startY = 0;
-        let currentX = 0;
-        let currentY = 0;
-        const maxDrag = 140;
-
-        const applyDrag = (x, y) => {
-            heroPortrait.style.setProperty('--hero-drag-x', `${x}px`);
-            heroPortrait.style.setProperty('--hero-drag-y', `${y}px`);
-        };
-
         const heroFace = heroPortrait.querySelector('img');
         const faceSources = {
             neutral: '/assets/images/neutral.png',
@@ -595,96 +582,12 @@
 
         setHeroFace('neutral');
 
-        heroPortrait.addEventListener('pointerdown', (event) => {
-            isDragging = true;
-            pointerId = event.pointerId;
-            heroPortrait.setPointerCapture(pointerId);
-            heroPortrait.classList.add('is-dragging');
-            startX = event.clientX - currentX;
-            startY = event.clientY - currentY;
-            setHeroFace('happy');
-        });
-
-        heroPortrait.addEventListener('pointermove', (event) => {
-            if (!isDragging || event.pointerId !== pointerId) {
-                return;
-            }
-
-            currentX = Math.max(-maxDrag, Math.min(maxDrag, event.clientX - startX));
-            currentY = Math.max(-maxDrag, Math.min(maxDrag, event.clientY - startY));
-            applyDrag(currentX, currentY);
-
-            const distance = Math.hypot(currentX, currentY);
-
-            if (distance > 95) {
-                setHeroFace('serious');
-            } else if (distance > 45) {
-                setHeroFace('wink');
-            } else {
-                setHeroFace('happy');
-            }
-        });
-
-        const endDrag = (event) => {
-            if (!isDragging || event.pointerId !== pointerId) {
-                return;
-            }
-
-            isDragging = false;
-            heroPortrait.releasePointerCapture(pointerId);
-            pointerId = null;
-            heroPortrait.classList.remove('is-dragging');
-
-            currentX = 0;
-            currentY = 0;
-
-            heroPortrait.style.transition = '';
-            applyDrag(0, 0);
-            setHeroFace('neutral');
-        };
-
         heroSection?.addEventListener('pointermove', (event) => {
-            if (isDragging) {
-                return;
-            }
-
             setHeroFace(faceFromDirection(event.clientX, event.clientY));
         });
 
         heroSection?.addEventListener('pointerleave', () => {
-            if (!isDragging) {
-                setHeroFace('neutral');
-            }
-        });
-
-        heroPortrait.addEventListener('pointerup', endDrag);
-        heroPortrait.addEventListener('pointercancel', endDrag);
-        heroPortrait.addEventListener('lostpointercapture', () => {
-            if (isDragging) {
-                isDragging = false;
-                heroPortrait.classList.remove('is-dragging');
-                currentX = 0;
-                currentY = 0;
-                applyDrag(0, 0);
-            }
-        });
-
-        heroPortrait.addEventListener('mouseenter', () => {
-            if (heroPortrait.classList.contains('is-rotating') || heroPortrait.classList.contains('is-dragging')) {
-                return;
-            }
-
-            heroPortrait.classList.add('is-rotating');
-            window.setTimeout(() => {
-                // Disable the transform transition so the portrait snaps back to
-                // its original angle instantly instead of animating a -360deg spin.
-                heroPortrait.style.transition = 'none';
-                heroPortrait.classList.remove('is-rotating');
-                // Force a reflow so the transition override takes effect before
-                // restoring the default transition for drag interactions.
-                void heroPortrait.offsetWidth;
-                heroPortrait.style.transition = '';
-            }, 3000);
+            setHeroFace('neutral');
         });
     }
 
